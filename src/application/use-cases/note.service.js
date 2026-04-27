@@ -1,4 +1,3 @@
-// importante al trabajar con nuestros archivos debemos añadir al final .js requerido para ESM
 import NoteEntity from "../../domain/entities/note.entity.js";
 
 export default class NoteService {
@@ -8,7 +7,9 @@ export default class NoteService {
     }
 
     async createNote(data) {
-        if (!data.title || !data.content) { throw new Error("Title and content are required"); }
+        if (!data.title || !data.content) {
+            throw new Error("Title and content are required");
+        }
 
         const note = new NoteEntity(data);
         return await this.noteRepository.save(note);
@@ -16,6 +17,12 @@ export default class NoteService {
 
     async getNotesByUserId(userId){
         return await this.noteRepository.findByUserId(userId);
+    }
+
+    async getNoteById(id) {
+        const note = await this.noteRepository.findById(id);
+        if (!note) throw new Error("Note not found");
+        return note;
     }
 
     async updateNote(id, data) {
@@ -34,7 +41,6 @@ export default class NoteService {
         const note = await this.noteRepository.findById(noteId);
         if (!note) throw new Error("Note not found");
         
-        // RESTRICCIÓN: Solo el dueño puede compartirla
         if (note.userId !== currentUserId) {
             throw new Error("Unauthorized: You can only share your own notes");
         }

@@ -11,6 +11,7 @@ import authRoutes from './presentation/routes/auth.routes.js';
 import { connectMongo } from './infrastructure/database/mongo/connection.js';
 import { connectMysql } from './infrastructure/database/mysql/connection.js';
 
+
 const app = express();
 
 // middlewares
@@ -48,7 +49,7 @@ const startServer = async () => {
     });
 
   } catch (error) {
-    console.error("❌ Error al iniciar servidor:", error);
+    console.error(" Error al iniciar servidor:", error);
   }
 };
 

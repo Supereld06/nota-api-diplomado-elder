@@ -7,9 +7,10 @@ export default class NoteController {
         const data = req.body;
         if (req.file) data.imageUrl = '/uploads/' + req.file.filename;
         data.userId = req.user.id; 
+
         try {
             const note = await this.noteService.createNote(data);
-            res.status(201).json(note); // 201 Created
+            res.status(201).json(note);
         } catch (error) {
             res.status(400).json({ error: error.message });
         }
@@ -17,9 +18,21 @@ export default class NoteController {
 
     getNotesByUserId = async (req, res) => {
         const userId = req.user.id;
+
         try {
             const notes = await this.noteService.getNotesByUserId(userId);
-            res.status(200).json(notes); // 200 OK
+            res.status(200).json(notes);
+        } catch (error) {
+            res.status(404).json({ error: error.message });
+        }
+    }
+
+    getNoteById = async (req, res) => {
+        const { id } = req.params;
+
+        try {
+            const note = await this.noteService.getNoteById(id);
+            res.status(200).json(note);
         } catch (error) {
             res.status(404).json({ error: error.message });
         }
@@ -28,8 +41,9 @@ export default class NoteController {
     updateNote = async (req, res) => {
         const { id } = req.params;
         const data = req.body;
+
         if (req.file) data.imageUrl = '/uploads/' + req.file.filename;
-        
+
         try {
             const note = await this.noteService.updateNote(id, data);
             res.status(200).json(note);
@@ -40,6 +54,7 @@ export default class NoteController {
 
     deleteNote = async (req, res) => {
         const { id } = req.params;
+
         try {
             const result = await this.noteService.deleteNote(id);
             res.status(200).json(result);
@@ -53,7 +68,9 @@ export default class NoteController {
         const { email } = req.body;
         const currentUserId = req.user.id;
 
-        if (!email) return res.status(400).json({ error: "Target email is required" });
+        if (!email) {
+            return res.status(400).json({ error: "Target email is required" });
+        }
 
         try {
             const result = await this.noteService.shareNoteByEmail(id, email, currentUserId);
