@@ -15,7 +15,7 @@ export default class NoteService {
         return await this.noteRepository.save(note);
     }
 
-    async getNotesByUserId(userId){
+    async getNotesByUserId(userId) {
         return await this.noteRepository.findByUserId(userId);
     }
 
@@ -25,22 +25,42 @@ export default class NoteService {
         return note;
     }
 
-    async updateNote(id, data) {
-        const note = await this.noteRepository.update(id, data);
-        if (!note) throw new Error("Note not found");
-        return note;
+    async updateNote(id, data, currentUserId) {
+        const note = await this.noteRepository.findById(id);
+
+        if (!note) {
+            throw new Error("Note not found");
+        }
+
+        // Verificar que el usuario actual es el propietario de la nota
+        if (Number(note.userId) !== Number(currentUserId)){
+            throw new Error("Unauthorized: You can only update your own notes");
+        }
+
+        return await this.noteRepository.update(id, data);
     }
 
-    async deleteNote(id) {
-        const note = await this.noteRepository.delete(id);
-        if (!note) throw new Error("Note not found");
+    async deleteNote(id, currentUserId) {
+        const note = await this.noteRepository.findById(id);
+
+        if (!note) {
+            throw new Error("Note not found");
+        }
+
+        // Verificar que el usuario actual es el propietario de la nota
+        if (Number(note.userId) !== Number(currentUserId)){
+            throw new Error("Unauthorized: You can only delete your own notes");
+        }
+
+        await this.noteRepository.delete(id);
+
         return { message: "Note deleted successfully" };
     }
 
     async shareNoteByEmail(noteId, targetEmail, currentUserId) {
         const note = await this.noteRepository.findById(noteId);
         if (!note) throw new Error("Note not found");
-        
+
         if (note.userId !== currentUserId) {
             throw new Error("Unauthorized: You can only share your own notes");
         }

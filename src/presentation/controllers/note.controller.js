@@ -6,7 +6,7 @@ export default class NoteController {
     createNote = async (req, res) => {
         const data = req.body;
         if (req.file) data.imageUrl = '/uploads/' + req.file.filename;
-        data.userId = req.user.id; 
+        data.userId = req.user.id;
 
         try {
             const note = await this.noteService.createNote(data);
@@ -41,25 +41,27 @@ export default class NoteController {
     updateNote = async (req, res) => {
         const { id } = req.params;
         const data = req.body;
+        const userId = req.user.id; 
 
         if (req.file) data.imageUrl = '/uploads/' + req.file.filename;
 
         try {
-            const note = await this.noteService.updateNote(id, data);
-            res.status(200).json(note);
+            const note = await this.noteService.updateNote(id, data, userId);
+            res.json(note);
         } catch (error) {
-            res.status(404).json({ error: error.message });
+            res.status(403).json({ error: error.message });
         }
     }
 
     deleteNote = async (req, res) => {
         const { id } = req.params;
+        const userId = req.user.id; 
 
         try {
-            const result = await this.noteService.deleteNote(id);
-            res.status(200).json(result);
+            const result = await this.noteService.deleteNote(id, userId);
+            res.json(result);
         } catch (error) {
-            res.status(404).json({ error: error.message });
+            res.status(403).json({ error: error.message });
         }
     }
 
