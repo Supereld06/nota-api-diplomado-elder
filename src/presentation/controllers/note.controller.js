@@ -1,3 +1,5 @@
+import { successResponse, errorResponse } from "../../utils/apiResponse.js";
+
 export default class NoteController {
     constructor(noteService) {
         this.noteService = noteService;
@@ -10,9 +12,9 @@ export default class NoteController {
 
         try {
             const note = await this.noteService.createNote(data);
-            res.status(201).json(note);
+            return successResponse(res, 201, note); 
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            return errorResponse(res, 400, error.message);
         }
     }
 
@@ -21,9 +23,9 @@ export default class NoteController {
 
         try {
             const notes = await this.noteService.getNotesByUserId(userId);
-            res.status(200).json(notes);
+            return successResponse(res, 200, notes); 
         } catch (error) {
-            res.status(404).json({ error: error.message });
+            return errorResponse(res, 404, error.message);
         }
     }
 
@@ -32,36 +34,36 @@ export default class NoteController {
 
         try {
             const note = await this.noteService.getNoteById(id);
-            res.status(200).json(note);
+            return successResponse(res, 200, note); 
         } catch (error) {
-            res.status(404).json({ error: error.message });
+            return errorResponse(res, 404, error.message);
         }
     }
 
     updateNote = async (req, res) => {
         const { id } = req.params;
         const data = req.body;
-        const userId = req.user.id; 
+        const userId = req.user.id;
 
         if (req.file) data.imageUrl = '/uploads/' + req.file.filename;
 
         try {
             const note = await this.noteService.updateNote(id, data, userId);
-            res.json(note);
+            return successResponse(res, 200, note);
         } catch (error) {
-            res.status(403).json({ error: error.message });
+            return errorResponse(res, 403, error.message);
         }
     }
 
     deleteNote = async (req, res) => {
         const { id } = req.params;
-        const userId = req.user.id; 
+        const userId = req.user.id;
 
         try {
             const result = await this.noteService.deleteNote(id, userId);
-            res.json(result);
+            return successResponse(res, 200, result); 
         } catch (error) {
-            res.status(403).json({ error: error.message });
+            return errorResponse(res, 403, error.message);
         }
     }
 
@@ -71,14 +73,14 @@ export default class NoteController {
         const currentUserId = req.user.id;
 
         if (!email) {
-            return res.status(400).json({ error: "Target email is required" });
+            return errorResponse(res, 400, "Target email is required"); 
         }
 
         try {
             const result = await this.noteService.shareNoteByEmail(id, email, currentUserId);
-            res.status(200).json(result);
+            return successResponse(res, 200, result); 
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            return errorResponse(res, 400, error.message);
         }
     }
 }
