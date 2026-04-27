@@ -29,7 +29,9 @@ router.get("/:id", authMiddleware, noteController.getNoteById);
 router.put("/:id", authMiddleware, upload.single('image'), noteController.updateNote);
 
 // DELETE
-router.delete("/:id", authMiddleware, roleMiddleware(["admin"]), noteController.deleteNote);
+
+//router.delete("/:id", authMiddleware, roleMiddleware(["admin"]), noteController.deleteNote);
+router.delete("/:id", authMiddleware, noteController.deleteNote);
 
 // SHARE
 router.post("/:id/share", authMiddleware, noteController.shareNote);
